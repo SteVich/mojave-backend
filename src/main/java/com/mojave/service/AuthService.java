@@ -12,15 +12,19 @@ import com.mojave.security.JwtTokenProvider;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.apache.commons.codec.binary.StringUtils;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
+
+import static java.util.Objects.nonNull;
 
 @Service
 @RequiredArgsConstructor
@@ -68,6 +72,19 @@ public class AuthService {
 
         String accessToken = createAccessToken(authentication);
         String refreshToken = createRefreshToken(authentication);
+        Long userId = tokenProvider.getUserIdFromJWT(accessToken);
+
+        return new JwtAuthenticationResponse(accessToken, refreshToken, userId);
+    }
+
+    public JwtAuthenticationResponse generateTokensFromUserEntity(User user) {
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(
+                user.getEmail(),
+                null
+        ));
+
+        String accessToken = tokenProvider.generateTokenFromId(user.getId(), properties.getExpirationAccessToken());
+        String refreshToken = tokenProvider.generateTokenFromId(user.getId(), properties.getExpirationRefreshToken());
         Long userId = tokenProvider.getUserIdFromJWT(accessToken);
 
         return new JwtAuthenticationResponse(accessToken, refreshToken, userId);

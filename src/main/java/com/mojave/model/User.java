@@ -45,7 +45,7 @@ public class User {
     @Column(name = "email", nullable = false, length = 50)
     String email;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password")
     String password;
 
     @Type(type = "JSON")

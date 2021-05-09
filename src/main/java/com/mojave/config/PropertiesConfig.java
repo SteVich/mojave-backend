@@ -9,7 +9,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@EnableConfigurationProperties(PropertiesConfig.JwtProperties.class)
+@EnableConfigurationProperties({
+        PropertiesConfig.JwtProperties.class,
+        PropertiesConfig.GoogleProperties.class
+})
 public class PropertiesConfig {
 
     @Getter
@@ -32,5 +35,16 @@ public class PropertiesConfig {
          * Use this variable for set key that allow to validate the JWT
          */
         String secretKey;
+    }
+
+    @Getter
+    @Setter
+    @FieldDefaults(level = AccessLevel.PRIVATE)
+    @ConfigurationProperties(prefix = "google")
+    public static class GoogleProperties {
+
+        String clientId;
+        String secret;
+        String redirectUri;
     }
 }
