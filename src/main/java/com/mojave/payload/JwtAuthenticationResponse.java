@@ -1,13 +1,12 @@
 package com.mojave.payload;
 
-import com.mojave.model.Role;
+import com.mojave.dictionary.Role;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
-import java.util.HashSet;
 import java.util.Set;
 
 @Getter

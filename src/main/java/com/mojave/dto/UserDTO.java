@@ -1,6 +1,6 @@
 package com.mojave.dto;
 
-import com.mojave.model.Role;
+import com.mojave.dictionary.Role;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
