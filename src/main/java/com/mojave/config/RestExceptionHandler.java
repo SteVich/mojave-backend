@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
+import javax.validation.ConstraintViolationException;
+
 @Log4j2
 @RestControllerAdvice
 public class RestExceptionHandler {
@@ -36,6 +38,12 @@ public class RestExceptionHandler {
     @ExceptionHandler(value = {MethodArgumentNotValidException.class})
     public ResponseEntity<String> validationException(MethodArgumentNotValidException ex, WebRequest request) {
         log.debug("handling MethodArgumentNotValidException...");
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = {ConstraintViolationException.class})
+    public ResponseEntity<String> validationException(ConstraintViolationException ex, WebRequest request) {
+        log.debug("handling ConstraintViolationException...");
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 

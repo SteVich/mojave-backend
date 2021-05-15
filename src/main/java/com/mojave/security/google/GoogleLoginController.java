@@ -1,7 +1,7 @@
 package com.mojave.security.google;
 
 import com.mojave.config.ApiHostConfig;
-import com.mojave.payload.JwtAuthenticationResponse;
+import com.mojave.payload.security.JwtAuthenticationResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

@@ -1,15 +1,15 @@
-package com.mojave.payload;
+package com.mojave.payload.response;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 @Getter
-@NoArgsConstructor
+@Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class TokenRequest {
+public class TagResponse {
 
-    String refreshToken;
-
+    Long id;
+    String name;
 }

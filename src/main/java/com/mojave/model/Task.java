@@ -29,32 +29,36 @@ import java.util.Set;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Task extends AbstractVersional {
 
-    @Column
+    @Column(nullable = false)
     String title;
 
     @Column
     String description;
 
-    @Column
+    @Column(nullable = false)
     Integer number;
 
-    @Column
+    @Column(precision = 4, scale = 2)
     Float estimate;
 
-    @Column
+    @Column(nullable = false)
     LocalDateTime dueDate;
 
     @Column
     @Enumerated(EnumType.STRING)
     Priority priority;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id")
     User assignee;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "tag_id")
     Tag tag;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "milestone_id")
+    Milestone milestone;
 
     @ManyToMany(cascade = {CascadeType.ALL})
     @JoinTable(
@@ -64,7 +68,7 @@ public class Task extends AbstractVersional {
     )
     Set<History> histories = new HashSet<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "board_column_id")
     BoardColumn boardColumn;
 }

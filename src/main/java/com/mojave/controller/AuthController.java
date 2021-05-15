@@ -1,10 +1,10 @@
 package com.mojave.controller;
 
-import com.mojave.payload.ApiResponse;
-import com.mojave.payload.JwtAuthenticationResponse;
-import com.mojave.payload.LoginRequest;
-import com.mojave.payload.SignUpRequest;
-import com.mojave.payload.TokenRequest;
+import com.mojave.payload.response.ApiResponse;
+import com.mojave.payload.security.JwtAuthenticationResponse;
+import com.mojave.payload.security.LoginRequest;
+import com.mojave.payload.security.SignUpRequest;
+import com.mojave.payload.security.TokenRequest;
 import com.mojave.service.AuthService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

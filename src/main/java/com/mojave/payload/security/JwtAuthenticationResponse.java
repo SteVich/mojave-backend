@@ -1,4 +1,4 @@
-package com.mojave.payload;
+package com.mojave.payload.security;
 
 import com.mojave.dictionary.Role;
 import lombok.AccessLevel;

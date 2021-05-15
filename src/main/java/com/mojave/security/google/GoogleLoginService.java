@@ -11,7 +11,7 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.mojave.config.PropertiesConfig;
 import com.mojave.dictionary.Role;
 import com.mojave.model.User;
-import com.mojave.payload.JwtAuthenticationResponse;
+import com.mojave.payload.security.JwtAuthenticationResponse;
 import com.mojave.service.AuthService;
 import com.mojave.service.UserService;
 import lombok.AccessLevel;

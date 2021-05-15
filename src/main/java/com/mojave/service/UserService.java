@@ -5,9 +5,12 @@ import com.mojave.exception.UserNotFoundException;
 import com.mojave.mapper.UserMapper;
 import com.mojave.model.User;
 import com.mojave.repository.UserRepository;
+import com.mojave.security.UserPrincipal;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,4 +51,11 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
+    public UserDTO getCurrentUser() {
+        UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+        return userMapper.principalToUserDTO(userPrincipal);
+    }
 }
