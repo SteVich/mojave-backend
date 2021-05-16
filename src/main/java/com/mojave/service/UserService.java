@@ -51,7 +51,7 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    public UserDTO getCurrentUser() {
+    public UserDTO getCurrentUserDto() {
         UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder
                 .getContext()
                 .getAuthentication()

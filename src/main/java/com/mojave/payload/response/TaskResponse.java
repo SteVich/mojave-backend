@@ -15,7 +15,6 @@ import java.util.List;
 public class TaskResponse {
 
     Long id;
-    Integer number;
     String title;
     LocalDateTime dueDate;
     Double estimate;
@@ -25,4 +24,5 @@ public class TaskResponse {
     MilestoneResponse milestone;
     TagResponse tag;
     List<HistoryResponse> histories;
+    Integer positionInColumn;
 }

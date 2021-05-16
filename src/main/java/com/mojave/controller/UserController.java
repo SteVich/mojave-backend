@@ -1,15 +1,12 @@
 package com.mojave.controller;
 
 import com.mojave.dto.UserDTO;
-import com.mojave.security.CustomUserDetailsService;
-import com.mojave.security.UserPrincipal;
 import com.mojave.service.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,7 +35,7 @@ public class UserController {
 
     @GetMapping("/current")
     public ResponseEntity<UserDTO> getCurrentUser() {
-        return ResponseEntity.ok(userService.getCurrentUser());
+        return ResponseEntity.ok(userService.getCurrentUserDto());
     }
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")

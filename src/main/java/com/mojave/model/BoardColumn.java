@@ -1,5 +1,6 @@
 package com.mojave.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.mojave.model.base.AbstractVersional;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -13,6 +14,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,12 +23,14 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "board_column")
+@JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BoardColumn extends AbstractVersional {
 
     @Column
     String name;
 
+    @OrderBy("positionInColumn")
     @OneToMany(mappedBy = "boardColumn", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Task> tasks = new ArrayList<>();
 

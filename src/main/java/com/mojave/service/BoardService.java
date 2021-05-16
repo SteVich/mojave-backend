@@ -25,5 +25,4 @@ public class BoardService {
                 .orElseThrow(() -> new ResourceNotFoundException("Board", "project id", projectId));
         return boardMapper.mapToResponse(board);
     }
-
 }

@@ -13,6 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,6 +27,9 @@ public class History extends AbstractVersional {
     @Column
     String description;
 
+    @Column
+    LocalDateTime date;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     User user;
@@ -35,5 +39,5 @@ public class History extends AbstractVersional {
     Project project;
 
     @ManyToMany(mappedBy = "histories")
-    private Set<Task> employees = new HashSet<>();
+    private Set<Task> tasks = new HashSet<>();
 }

@@ -3,6 +3,7 @@ package com.mojave.model;
 import com.mojave.dictionary.Priority;
 import com.mojave.model.base.AbstractVersional;
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
@@ -24,6 +25,7 @@ import java.util.Set;
 
 @Getter
 @Setter
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "task")
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -35,9 +37,6 @@ public class Task extends AbstractVersional {
     @Column
     String description;
 
-    @Column(nullable = false)
-    Integer number;
-
     @Column(precision = 4, scale = 2)
     Float estimate;
 
@@ -47,6 +46,9 @@ public class Task extends AbstractVersional {
     @Column
     @Enumerated(EnumType.STRING)
     Priority priority;
+
+    @Column
+    Integer positionInColumn;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id")
