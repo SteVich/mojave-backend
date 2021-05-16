@@ -11,6 +11,8 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
@@ -28,6 +30,9 @@ public class BoardColumnService {
         column.setBoard(board);
         column.setName(columnName);
 
+        Integer maxColumnPosition = boardColumnRepository.getMaxColumnPosition(boardId);
+        column.setPositionInBoard(maxColumnPosition + 1);
+
         return boardColumnRepository.save(column).getId();
     }
 
@@ -38,6 +43,19 @@ public class BoardColumnService {
 
         column.setName(newColumnName);
         boardColumnRepository.save(column);
+    }
+
+    @Transactional
+    public void updateColumnsPositions(Long boardId, List<Long> idsToSetPositions) {
+        List<BoardColumn> columns = boardColumnRepository.findAllByIdIn(idsToSetPositions);
+
+        idsToSetPositions.forEach(id ->
+                columns.stream()
+                        .filter(column -> column.getId().equals(id))
+                        .forEach(column -> column.setPositionInBoard(idsToSetPositions.indexOf(id)))
+        );
+
+        boardColumnRepository.saveAll(columns);
     }
 
     @Transactional

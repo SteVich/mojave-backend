@@ -10,11 +10,13 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/project")
@@ -36,13 +38,20 @@ public class BoardColumnController {
                                                         @PathVariable Long columnId,
                                                         @NotBlank @RequestParam String newColumnName) {
         boardColumnService.updateColumnName(columnId, newColumnName);
-        return ResponseEntity.ok(new ApiResponse(true, "Successfully update column name"));
+        return ResponseEntity.ok(new ApiResponse(true, "Successfully updated column name"));
+    }
+
+    @PutMapping("/board/{boardId}/column/update-positions")
+    public ResponseEntity<ApiResponse> updateColumnPositionsOnBoard(@PathVariable Long boardId,
+                                                                    @RequestBody List<Long> ids) {
+        boardColumnService.updateColumnsPositions(boardId, ids);
+        return ResponseEntity.ok(new ApiResponse(true, "Successfully updated columns positions"));
     }
 
     @DeleteMapping("/board/{boardId}/column/{columnId}")
     public ResponseEntity<ApiResponse> deleteTask(@PathVariable Long boardId,
                                                   @PathVariable Long columnId) {
         boardColumnService.delete(boardId, columnId);
-        return ResponseEntity.ok(new ApiResponse(true, "Section has been successfully deleted"));
+        return ResponseEntity.ok(new ApiResponse(true, "Section successfully has been deleted"));
     }
 }

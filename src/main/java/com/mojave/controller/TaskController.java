@@ -34,6 +34,13 @@ public class TaskController {
         return ResponseEntity.ok(taskService.create(projectId, columnId, request));
     }
 
+    @PostMapping("/{projectId}/board/column/{columnId}/task/{taskId}/duplicate")
+    public ResponseEntity<TaskResponse> duplicateTask(@PathVariable Long projectId,
+                                                      @PathVariable Long columnId,
+                                                      @PathVariable Long taskId) {
+        return ResponseEntity.ok(taskService.duplicate(projectId, columnId, taskId));
+    }
+
     @PutMapping("/{projectId}/board/column/{columnId}/task/{taskId}")
     public ResponseEntity<TaskResponse> updateTask(@PathVariable Long projectId,
                                                    @PathVariable Long columnId,

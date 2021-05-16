@@ -1,6 +1,5 @@
 package com.mojave.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.mojave.model.base.AbstractVersional;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -23,12 +22,14 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "board_column")
-@JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BoardColumn extends AbstractVersional {
 
     @Column
     String name;
+
+    @Column
+    Integer positionInBoard;
 
     @OrderBy("positionInColumn")
     @OneToMany(mappedBy = "boardColumn", cascade = CascadeType.ALL, orphanRemoval = true)

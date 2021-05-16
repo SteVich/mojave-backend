@@ -23,6 +23,8 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -31,6 +33,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class TaskService {
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     TaskRepository taskRepository;
     BoardColumnRepository boardColumnRepository;
@@ -48,6 +53,24 @@ public class TaskService {
         Task createdTask = taskRepository.save(task);
 
         return taskMapper.toResponse(createdTask);
+    }
+
+    @Transactional
+    public TaskResponse duplicate(Long projectId, Long columnId, Long taskId) {
+        Task taskToDuplicate = taskRepository.findById(taskId)
+                .orElseThrow(() -> new ResourceNotFoundException("Task", "id", taskId));
+
+        taskToDuplicate.setId(null);
+        taskToDuplicate.setTitle(taskToDuplicate.getTitle() + " (duplicated)");
+        taskToDuplicate.setPositionInColumn(taskToDuplicate.getPositionInColumn() + 1);
+
+        History history = getTaskHistory(projectId, "created the task as a duplicate");
+        taskToDuplicate.setHistories(Collections.singleton(history));
+
+        entityManager.detach(taskToDuplicate);
+        Task duplicatedTask = taskRepository.save(taskToDuplicate);
+
+        return taskMapper.toResponse(duplicatedTask);
     }
 
     @Transactional
@@ -137,16 +160,18 @@ public class TaskService {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new ResourceNotFoundException("Task", "id", taskId));
 
-        BoardColumn boardColumn = boardColumnRepository.findById(columnId)
-                .orElseThrow(() -> new ResourceNotFoundException("Column", "id", columnId));
+        if (!task.getBoardColumn().getId().equals(columnId)) {
+            BoardColumn boardColumn = boardColumnRepository.findById(columnId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Column", "id", columnId));
 
-        History history = getTaskHistory(projectId, String.format("moved task from %s to %s", task.getBoardColumn().getName(), boardColumn.getName()));
-        task.getHistories().add(history);
+            History history = getTaskHistory(projectId, String.format("moved task from %s to %s", task.getBoardColumn().getName(), boardColumn.getName()));
+            task.getHistories().add(history);
 
-        task.setBoardColumn(boardColumn);
-        task.setPositionInColumn(taskPosition);
+            task.setBoardColumn(boardColumn);
+            task.setPositionInColumn(taskPosition);
 
-        taskRepository.save(task);
+            taskRepository.save(task);
+        }
     }
 
     @Transactional
