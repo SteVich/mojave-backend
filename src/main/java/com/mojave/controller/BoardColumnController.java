@@ -52,6 +52,6 @@ public class BoardColumnController {
     public ResponseEntity<ApiResponse> deleteTask(@PathVariable Long boardId,
                                                   @PathVariable Long columnId) {
         boardColumnService.delete(boardId, columnId);
-        return ResponseEntity.ok(new ApiResponse(true, "Section successfully has been deleted"));
+        return ResponseEntity.ok(new ApiResponse(true, "Section has been deleted successfully"));
     }
 }
