@@ -23,6 +23,9 @@ public class Tag extends AbstractVersional {
     @Column
     String name;
 
+    @Column
+    String color;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     Project project;

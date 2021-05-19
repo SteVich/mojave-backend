@@ -12,4 +12,5 @@ public class TagResponse {
 
     Long id;
     String name;
+    String color;
 }
