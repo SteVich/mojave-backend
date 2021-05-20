@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static java.util.Objects.isNull;
+
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
@@ -31,6 +33,7 @@ public class BoardColumnService {
         column.setName(columnName);
 
         Integer maxColumnPosition = boardColumnRepository.getMaxColumnPosition(boardId);
+        maxColumnPosition = isNull(maxColumnPosition) ? 0 : maxColumnPosition;
         column.setPositionInBoard(maxColumnPosition + 1);
 
         return boardColumnRepository.save(column).getId();

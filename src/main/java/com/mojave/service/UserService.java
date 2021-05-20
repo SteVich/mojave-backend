@@ -3,6 +3,7 @@ package com.mojave.service;
 import com.mojave.dto.UserDTO;
 import com.mojave.exception.UserNotFoundException;
 import com.mojave.mapper.UserMapper;
+import com.mojave.model.Project;
 import com.mojave.model.User;
 import com.mojave.repository.UserRepository;
 import com.mojave.security.UserPrincipal;
@@ -57,5 +58,21 @@ public class UserService {
                 .getAuthentication()
                 .getPrincipal();
         return userMapper.principalToUserDTO(userPrincipal);
+    }
+
+    @Transactional(readOnly = true)
+    public User getCurrentUser() {
+        UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+        return userRepository.findById(userPrincipal.getId()).orElse(null);
+    }
+
+    @Transactional
+    public void addProjectToUser(Project project) {
+        User currentUser = getCurrentUser();
+        currentUser.getProjects().add(project);
+        userRepository.save(currentUser);
     }
 }

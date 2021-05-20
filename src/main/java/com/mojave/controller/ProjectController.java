@@ -1,5 +1,6 @@
 package com.mojave.controller;
 
+import com.mojave.payload.request.ProjectCreateRequest;
 import com.mojave.payload.response.ApiResponse;
 import com.mojave.payload.response.ProjectResponse;
 import com.mojave.service.ProjectService;
@@ -9,10 +10,14 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/project")
@@ -22,9 +27,19 @@ public class ProjectController {
 
     ProjectService projectService;
 
+    @GetMapping
+    public ResponseEntity<List<ProjectResponse>> getAllProjectsForUser() {
+        return ResponseEntity.ok(projectService.getProjectsForUser());
+    }
+
     @GetMapping("/{projectId}")
     public ResponseEntity<ProjectResponse> getProject(@PathVariable Long projectId) {
         return ResponseEntity.ok(projectService.getResponseById(projectId));
+    }
+
+    @PostMapping
+    public ResponseEntity<ProjectResponse> createProject(@RequestBody ProjectCreateRequest request) {
+        return ResponseEntity.ok(projectService.create(request));
     }
 
     @PutMapping("/{projectId}/name")

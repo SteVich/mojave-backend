@@ -38,7 +38,6 @@ public class MilestoneController {
     @DeleteMapping("/{projectId}/milestone/{milestoneId}")
     public ResponseEntity<ApiResponse> deleteMilestone(@PathVariable Long projectId, @PathVariable Long milestoneId) {
         ApiResponse apiResponse;
-
         boolean result = milestoneService.deleteMilestone(projectId, milestoneId);
         if (result) {
             apiResponse = new ApiResponse(true, "Milestone was deleted successfully");
