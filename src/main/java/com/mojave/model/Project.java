@@ -12,6 +12,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -43,9 +44,6 @@ public class Project extends AbstractVersional {
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Board> board = new ArrayList<>();
 
-    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Team> team = new ArrayList<>();
-
     @ManyToMany(mappedBy = "projects")
-    private Set<User> users = new HashSet<>();
+    private List<User> users = new ArrayList<>();
 }

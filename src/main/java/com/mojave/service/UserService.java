@@ -1,16 +1,18 @@
 package com.mojave.service;
 
+import com.mojave.dictionary.Role;
 import com.mojave.dto.UserDTO;
 import com.mojave.exception.UserNotFoundException;
 import com.mojave.mapper.UserMapper;
 import com.mojave.model.Project;
 import com.mojave.model.User;
+import com.mojave.model.UserProjectRole;
+import com.mojave.model.UserProjectRoleId;
 import com.mojave.repository.UserRepository;
 import com.mojave.security.UserPrincipal;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,6 +75,21 @@ public class UserService {
     public void addProjectToUser(Project project) {
         User currentUser = getCurrentUser();
         currentUser.getProjects().add(project);
+
+        setRole(project, currentUser, Role.ROLE_PROJECT_OWNER);
+
         userRepository.save(currentUser);
+    }
+
+    public void setRole(Project project, User currentUser, Role role) {
+        UserProjectRoleId id = new UserProjectRoleId();
+        id.setUserId(currentUser.getId());
+        id.setProjectId(project.getId());
+
+        UserProjectRole userProjectRole = new UserProjectRole();
+        userProjectRole.setId(id);
+        userProjectRole.setRole(role);
+
+        currentUser.getProjectRoles().add(userProjectRole);
     }
 }

@@ -10,8 +10,13 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.mojave.config.PropertiesConfig;
 import com.mojave.dictionary.Role;
+import com.mojave.model.Project;
 import com.mojave.model.User;
+import com.mojave.model.UserProjectRole;
 import com.mojave.payload.security.JwtAuthenticationResponse;
+import com.mojave.repository.InviteRepository;
+import com.mojave.repository.ProjectRepository;
+import com.mojave.repository.UserRepository;
 import com.mojave.service.AuthService;
 import com.mojave.service.UserService;
 import lombok.AccessLevel;
@@ -24,9 +29,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +47,9 @@ public class GoogleLoginService {
     PropertiesConfig.GoogleProperties googleProperties;
     UserService userService;
     AuthService authService;
+    InviteRepository inviteRepository;
+    ProjectRepository projectRepository;
+    UserRepository userRepository;
 
     @Transactional
     public JwtAuthenticationResponse findAndAuthenticateUser(StringBuffer stringBuffer) {
@@ -65,8 +75,34 @@ public class GoogleLoginService {
 
         String email = payload.getEmail();
 
-        return userService.findOptionalUserByEmail(email)
-                .orElseGet(() -> createNewUser(email, payload));
+        User user;
+        Optional<User> optionalUser = userService.findOptionalUserByEmail(email);
+
+        if (optionalUser.isPresent()) {
+            user = optionalUser.get();
+        } else {
+            user = createNewUser(email, payload);
+            setInvitedInvitedUserToProject(email, user);
+        }
+
+        return user;
+    }
+
+    private void setInvitedInvitedUserToProject(String email, User user) {
+        inviteRepository.findByEmail(email).ifPresent(invite -> {
+            if (invite.getDueDate().isAfter(LocalDateTime.now())) {
+                Project project = invite.getProject();
+
+                user.getProjects().add(project);
+                userService.setRole(project, user, Role.ROLE_DEVELOPER);
+
+                project.getUsers().add(user);
+
+                projectRepository.save(project);
+                userRepository.save(user);
+            }
+            inviteRepository.delete(invite);
+        });
     }
 
     private User createNewUser(String email, GoogleIdToken.Payload payload) {
@@ -76,7 +112,6 @@ public class GoogleLoginService {
         user.setEmail(email);
         user.setName(fullName);
         user.setUsername(fullName);
-        user.setRoles(Collections.singleton(Role.ROLE_USER));
 
         return userService.createUser(user);
     }

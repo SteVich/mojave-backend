@@ -63,7 +63,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/google/**", "/api/google/**", "/api/auth/**", "/auth")
+                .antMatchers("/google/**", "/api/google/**", "/api/auth/**", "/auth", "/accept")
                 .permitAll()
                 .anyRequest()
                 .authenticated();

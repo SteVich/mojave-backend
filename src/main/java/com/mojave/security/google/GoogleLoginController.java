@@ -1,7 +1,10 @@
 package com.mojave.security.google;
 
 import com.mojave.config.ApiHostConfig;
+import com.mojave.model.Project;
+import com.mojave.model.User;
 import com.mojave.payload.security.JwtAuthenticationResponse;
+import com.mojave.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -19,6 +22,7 @@ import java.io.IOException;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class GoogleLoginController {
 
+    UserRepository userRepository;
     GoogleLoginService googleLoginService;
     ApiHostConfig hostConfig;
 
@@ -42,10 +46,14 @@ public class GoogleLoginController {
 
         JwtAuthenticationResponse authResponse = googleLoginService.findAndAuthenticateUser(fullUrlBuffer);
 
+        User user = userRepository.findById(authResponse.getUserId()).orElse(new User());
+        int projectsCount = user.getProjects().size();
+
         response.sendRedirect(host +
                 "/auth?accessToken=" + authResponse.getAccessToken() +
                 "&refreshToken=" + authResponse.getRefreshToken() +
-                "&userId=" + authResponse.getUserId());
+                "&userId=" + authResponse.getUserId() +
+                "&projectsCount=" + projectsCount);
     }
 
 }

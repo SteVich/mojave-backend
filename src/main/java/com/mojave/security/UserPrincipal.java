@@ -2,6 +2,7 @@ package com.mojave.security;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mojave.model.User;
+import com.mojave.model.UserProjectRole;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -10,10 +11,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @EqualsAndHashCode
 @Getter
@@ -29,24 +35,21 @@ public class UserPrincipal implements UserDetails {
 
     String username;
 
-    @JsonIgnore
     String email;
 
     @JsonIgnore
     String password;
 
-    Collection<? extends GrantedAuthority> authorities;
+    Set<UserProjectRole> roles = new HashSet<>();
 
     public static UserPrincipal create(User user) {
-        List<GrantedAuthority> authorities = UserPrincipalService.authorityList(user);
-
         return new UserPrincipal(
                 user.getId(),
                 user.getName(),
                 user.getUsername(),
                 user.getEmail(),
                 user.getPassword(),
-                authorities
+                user.getProjectRoles()
         );
     }
 
@@ -62,7 +65,7 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
+        return new ArrayList<>();
     }
 
     @Override
