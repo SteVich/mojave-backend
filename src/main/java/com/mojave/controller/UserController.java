@@ -1,6 +1,8 @@
 package com.mojave.controller;
 
 import com.mojave.dto.UserDTO;
+import com.mojave.payload.request.UserUpdateRequest;
+import com.mojave.payload.response.ApiResponse;
 import com.mojave.service.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +12,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -38,11 +43,10 @@ public class UserController {
         return ResponseEntity.ok(userService.getCurrentUserDto());
     }
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteUser(@PathVariable("id") Long id) {
-        userService.deleteUser(id);
-
-        return ResponseEntity.noContent().build();
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse> update(@PathVariable Long id, @RequestBody UserUpdateRequest request) {
+        userService.update(id, request);
+        return ResponseEntity.ok(new ApiResponse(true, "Successfully updated"));
     }
+
 }

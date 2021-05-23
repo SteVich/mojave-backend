@@ -2,18 +2,21 @@ package com.mojave.service;
 
 import com.mojave.dictionary.Role;
 import com.mojave.dto.UserDTO;
+import com.mojave.exception.ResourceNotFoundException;
 import com.mojave.exception.UserNotFoundException;
 import com.mojave.mapper.UserMapper;
 import com.mojave.model.Project;
 import com.mojave.model.User;
 import com.mojave.model.UserProjectRole;
 import com.mojave.model.UserProjectRoleId;
+import com.mojave.payload.request.UserUpdateRequest;
 import com.mojave.repository.UserRepository;
 import com.mojave.security.UserPrincipal;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +30,7 @@ public class UserService {
 
     UserRepository userRepository;
     UserMapper userMapper;
+    PasswordEncoder passwordEncoder;
 
     @Transactional(readOnly = true)
     public List<UserDTO> findAllUsers() {
@@ -91,5 +95,16 @@ public class UserService {
         userProjectRole.setRole(role);
 
         currentUser.getProjectRoles().add(userProjectRole);
+    }
+
+    @Transactional
+    public void update(Long id, UserUpdateRequest request) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "user id", id));
+
+        user.setName(request.getName());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        userRepository.save(user);
     }
 }
