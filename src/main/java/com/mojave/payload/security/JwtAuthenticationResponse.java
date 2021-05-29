@@ -7,8 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
-import java.util.Set;
-
 @Getter
 @Setter
 @AllArgsConstructor
@@ -18,7 +16,7 @@ public class JwtAuthenticationResponse {
     String accessToken;
     String refreshToken;
     Long userId;
-    Set<Role> roles;
+    Role role;
 
     public JwtAuthenticationResponse(String accessToken, String refreshToken, Long userId) {
         this.accessToken = accessToken;

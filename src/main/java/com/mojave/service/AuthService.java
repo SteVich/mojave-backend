@@ -3,12 +3,15 @@ package com.mojave.service;
 import com.mojave.config.PropertiesConfig;
 import com.mojave.dictionary.Role;
 import com.mojave.model.User;
+import com.mojave.model.UserProjectRole;
 import com.mojave.payload.security.JwtAuthenticationResponse;
 import com.mojave.payload.security.LoginRequest;
+import com.mojave.payload.security.RoleResponse;
 import com.mojave.payload.security.SignUpRequest;
 import com.mojave.payload.security.TokenRequest;
 import com.mojave.repository.UserRepository;
 import com.mojave.security.JwtTokenProvider;
+import com.mojave.security.UserPrincipal;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -21,6 +24,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -65,9 +70,12 @@ public class AuthService {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String accessToken = createAccessToken(authentication);
-        String refreshToken = createRefreshToken(authentication);
-        Long userId = tokenProvider.getUserIdFromJWT(accessToken);
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        Long userId = userPrincipal.getId();
+        User user = userRepository.getOne(userId);
+
+        String accessToken = createAccessToken(authentication, user);
+        String refreshToken = createRefreshToken(authentication, user);
 
         return new JwtAuthenticationResponse(accessToken, refreshToken, userId);
     }
@@ -78,28 +86,44 @@ public class AuthService {
                 null
         ));
 
-        String accessToken = tokenProvider.generateTokenFromId(user.getId(), properties.getExpirationAccessToken());
-        String refreshToken = tokenProvider.generateTokenFromId(user.getId(), properties.getExpirationRefreshToken());
-        Long userId = tokenProvider.getUserIdFromJWT(accessToken);
+        List<RoleResponse> roles = getRolesFromUser(user);
 
-        return new JwtAuthenticationResponse(accessToken, refreshToken, userId);
+        String accessToken = tokenProvider.generateTokenFromId(user.getId(), properties.getExpirationAccessToken(), roles);
+        String refreshToken = tokenProvider.generateTokenFromId(user.getId(), properties.getExpirationRefreshToken(), roles);
+
+        return new JwtAuthenticationResponse(accessToken, refreshToken, user.getId());
     }
 
     public JwtAuthenticationResponse generateNewTokens(TokenRequest tokenRequest) {
         Long userId = tokenProvider.getUserIdFromJWT(tokenRequest.getRefreshToken());
 
-        String newAccessToken = tokenProvider.generateTokenFromId(userId, properties.getExpirationAccessToken());
-        String newRefreshToken = tokenProvider.generateTokenFromId(userId, properties.getExpirationRefreshToken());
+        User user = userRepository.getOne(userId);
+        List<RoleResponse> roles = getRolesFromUser(user);
+
+        String newAccessToken = tokenProvider.generateTokenFromId(userId, properties.getExpirationAccessToken(), roles);
+        String newRefreshToken = tokenProvider.generateTokenFromId(userId, properties.getExpirationRefreshToken(), roles);
 
         return new JwtAuthenticationResponse(newAccessToken, newRefreshToken, userId);
     }
 
-    public String createAccessToken(Authentication authentication) {
-        return tokenProvider.generateToken(authentication, properties.getExpirationAccessToken());
+    public String createAccessToken(Authentication authentication, User user) {
+        List<RoleResponse> roles = getRolesFromUser(user);
+        return tokenProvider.generateToken(authentication, properties.getExpirationAccessToken(), roles);
     }
 
-    public String createRefreshToken(Authentication authentication) {
-        return tokenProvider.generateToken(authentication, properties.getExpirationRefreshToken());
+    public String createRefreshToken(Authentication authentication, User user) {
+        List<RoleResponse> roles = getRolesFromUser(user);
+        return tokenProvider.generateToken(authentication, properties.getExpirationRefreshToken(), roles);
     }
 
+    private List<RoleResponse> getRolesFromUser(User user) {
+        return user.getProjectRoles().stream()
+                .map(userProjectRole -> {
+                    RoleResponse roleResponse = new RoleResponse();
+                    roleResponse.setProjectId(userProjectRole.getId().getProjectId());
+                    roleResponse.setRole(userProjectRole.getRole());
+
+                    return roleResponse;
+                }).collect(Collectors.toList());
+    }
 }
