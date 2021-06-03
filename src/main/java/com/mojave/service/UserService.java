@@ -44,8 +44,8 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<User> findOptionalUserByEmail(String email) {
-        return userRepository.findUserByEmail(email);
+    public List<User> findOptionalUserByEmail(String email) {
+        return userRepository.findUsersByEmail(email);
     }
 
     @Transactional

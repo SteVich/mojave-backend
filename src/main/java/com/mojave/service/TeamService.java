@@ -99,7 +99,7 @@ public class TeamService {
         String url = "http://localhost:8080/";
         String profile = Arrays.stream(environment.getActiveProfiles()).findFirst().orElse("local");
         if (profile.equals("prod")) {
-            url = "prod";
+            url = "http://13.53.217.225/";
         }
 
         String acceptUrl = url;

@@ -76,7 +76,7 @@ public class GoogleLoginService {
         String email = payload.getEmail();
 
         User user;
-        Optional<User> optionalUser = userService.findOptionalUserByEmail(email);
+        Optional<User> optionalUser = userService.findOptionalUserByEmail(email).stream().findFirst();
 
         if (optionalUser.isPresent()) {
             user = optionalUser.get();
